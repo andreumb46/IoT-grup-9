@@ -1,0 +1,19 @@
+0x06 Sensibilitat sensor llum
+0x07 Error temporal sequència (exemple: +-200ms)
+0x05 Sensibilitat càmera
+0x08 Zona horària (0-255)
+0x01 Habilitar càmera
+0x02 Deshabilitar càmera
+0x03 Habilitar sensor llum
+0x04 Deshabilitar sensor llum
+
+
+OPCIONAL:
+0x09 Afegir sensors de so (per identificador ràdio)
+0x10 Eliminar sensors de so (per identificador ràdio)
+0x11 Afegir comandaments de distància (per identificador ràdio)
+0x12 Eliminar comandaments de distància (per identificador ràdio)
+
+
+FORMAT PAQUET:
+<ID COMANDA (byte)> <VALOR COMANDA (byte, opcional)>
