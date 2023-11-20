@@ -72,10 +72,42 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
         // Habilitar càmera
         Serial.println("Habilitar càmera");
         break;
+      
+      case 0x02:
+        //Deshabilitar càmera
+        Serial.println("Deshabilitar càmera");
+        break;
+      
+      case 0x03:
+        // Habilitar sensor llum
+        Serial.println("Habilitar sensor llum");
+        break;
+
+      case 0x04:
+        // Deshabilitar sensor llum
+        Serial.println("Deshabilitar sensor llum");
+        break;
+      
+      case 0x05:
+        // Sensibilitat càmera
+        waitingForValue = true;
+        break;
+      
+      case 0x06:
+        // Sensibilitat sensor de llum
+        waitingForValue = true;
+        break;
+      
+      case 0x07:
+        // error temporal permès
+        waitingForValue = true;
+        break;
+
       case 0x08:
         // Canviar zona horària
         waitingForValue = true;
         return;
+      
       default:
         Serial.println("Comanda invàlida");
     }
@@ -83,6 +115,28 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
     uint8_t value = bleCharacteristic.value();
 
     switch (previousCommand) {
+
+      case 0x05:
+        // Sensibilitat càmera
+        Serial.print("Sensibilitat càmera: ");
+        Serial.println(value/255);
+        waitingForValue = false;
+        break;
+
+      case 0x06:
+        // Sensibilitat sensor de llum
+        Serial.print("Sensibilitat sensor de llum: ");
+        Serial.println(value/255);
+        waitingForValue = false;
+        break;
+
+      case 0x07:
+        // Error temporal
+        Serial.print("Error permès en segons: ");
+        Serial.println(value/255);
+        waitingForValue = false;
+        break;
+      
       case 0x08:
         // Canviar zona horària
         Serial.print("Valor zona horària: ");
