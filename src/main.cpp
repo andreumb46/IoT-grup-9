@@ -1,10 +1,12 @@
+#define ARDUINOJSON_ENABLE_STD_STRING 0
+#define ARDUINOJSON_ENABLE_STD_STREAM 0
+#include <iostream>
 #include <Arduino.h>
 #include <SPI.h>
 #include <BLEPeripheral.h>
 #include <array>
-#include <iostream>
 
-#define N_OPTIONS = 5
+
 //custom boards may override default pin definitions with BLEPeripheral(PIN_REQ, PIN_RDY, PIN_RST)
 BLEPeripheral blePeripheral = BLEPeripheral();
 
@@ -16,7 +18,7 @@ BLECharCharacteristic bleCharacteristic = BLECharCharacteristic("19b10001e8f2537
 
 bool waitingForValue = false;
 uint8_t previousCommand;
-std::array<uint8_t, N_OPTIONS> configuration;
+char config[4] ={0,0,0,0}; 
 float val_adj;
 
 void blePeripheralConnectHandler(BLECentral& central);
@@ -50,17 +52,23 @@ void setup() {
 void loop() {
   // poll peripheral
   blePeripheral.poll();
+
+  if (!(millis() % 1000)) {
+    Serial.println("Interrupttttttt");
+  }
 }
+
 
 void blePeripheralConnectHandler(BLECentral& central) {
   // central connected event handler
   Serial.print(F("Connected event, central: "));
   Serial.println(central.address());
+  
+  //std::cout << "Configuració al inicialitzar: ";
+  //for (int value : configuration) {
+    //  std::cout << value << " ";
+  //}
 
-  std::cout << "Configuració al inicialitzar: ";
-  for (int value : configuration) {
-      std::cout << value << " ";
-  }
 }
 
 void blePeripheralDisconnectHandler(BLECentral& central) {
@@ -81,25 +89,25 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
       case 0x01:
         // Habilitar càmera
         Serial.println("Habilitar càmera");
-        configuration[0] = 1;
+        config[0] = 128;
         break;
       
       case 0x02:
         //Deshabilitar càmera
         Serial.println("Deshabilitar càmera");
-        configuration[0] = 0;
+        config[0] = 0;
         break;
       
       case 0x03:
         // Habilitar sensor llum
         Serial.println("Habilitar sensor llum");
-        configuration[1] = 1;
+        config[1] = 128;
         break;
 
       case 0x04:
         // Deshabilitar sensor llum
         Serial.println("Deshabilitar sensor llum");
-        configuration[1] = 0;
+        config[1] = 0;
         break;
       
       case 0x05:
@@ -135,7 +143,7 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
         Serial.print("Sensibilitat càmera: ");
         val_adj = value/255.0;
         Serial.println(val_adj);
-        configuration[2] = value;
+        config[0] = value;
         waitingForValue = false;
         break;
 
@@ -144,7 +152,7 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
         Serial.print("Sensibilitat sensor de llum: ");
         val_adj = value/255.0;
         Serial.println(val_adj);
-        configuration[3] = value;
+        config[1] = value;
         waitingForValue = false;
         break;
 
@@ -153,14 +161,14 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
         Serial.print("Error permès en segons: ");
         val_adj = value/255.0;
         Serial.println(val_adj);
-        configuration[4] = value;
+        config[2] = value;
         waitingForValue = false;
         break;
       
       case 0x08:
         // Canviar zona horària
         Serial.print("Valor zona horària: ");
-        configuration[5] = value;
+        config[3] = value;
         Serial.println(value);
         break;
       default:
@@ -170,4 +178,3 @@ void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& charact
     waitingForValue = false;
   }
 }
-
