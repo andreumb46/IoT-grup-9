@@ -25,6 +25,22 @@ void blePeripheralConnectHandler(BLECentral& central);
 void blePeripheralDisconnectHandler(BLECentral& central);
 void switchCharacteristicWritten(BLECentral& central, BLECharacteristic& characteristic);
 
+String generateRandomString() {
+  String randomString;
+
+  // Generate 4 random digits
+  for (int i = 0; i < 4; ++i) {
+    randomString += String(random(10));
+  }
+
+  // Generate 3 random letters
+  for (int i = 0; i < 3; ++i) {
+    randomString += char(random('A', 'Z' + 1));
+  }
+
+  return randomString;
+}
+
 void setup() {
   Serial.begin(9600);
 
@@ -53,8 +69,18 @@ void loop() {
   // poll peripheral
   blePeripheral.poll();
 
-  if (!(millis() % 1000)) {
-    Serial.println("Interrupttttttt");
+  if (!(millis() % 5000)) {
+
+    String randomString = generateRandomString();
+    
+    // Convert the String to a char array for BLE transmission
+    char randomCharArray[randomString.length() + 1];
+    randomString.toCharArray(randomCharArray, randomString.length() + 1);
+
+    // Set the value of the BLE characteristic
+    bleCharacteristic.setValue(*randomCharArray);
+    
+    Serial.println("Sent Random String: " + randomString);
   }
 }
 
